@@ -13,13 +13,24 @@ export default createStore({
 
     },
     VIEW_LINK(state, link) {
-      state.links.push(link);
+      console.log("VIEW MUTATION");
+      //on sauvegarde l'etat du link
+      let index = state.links.findIndex(l => l.id === link);
+
+      state.links[index].count++;
+
+      localStorage.setItem('links', JSON.stringify(state.links));
+
     }
   },
   actions: {
     addLink({ commit }, link) {
       commit('ADD_LINK', link);
     },
+    viewLink({ commit }, link) {
+      console.log("VIEW ACTION");
+      commit('VIEW_LINK', link);
+    }
     
   },
   getters:{

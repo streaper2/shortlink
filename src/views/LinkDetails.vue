@@ -13,6 +13,9 @@ export default {
       id: this.$route.params.id,
     }
   },
+  mounted(){
+    console.log("routing",this.$route.params.id);
+  }
 }
 </script>
 

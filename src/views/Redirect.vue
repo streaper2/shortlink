@@ -20,6 +20,7 @@ export default {
     mounted () { 
         console.log("we are mounted");
         console.log(this.link);
+        this.$store.dispatch('viewLink', this.$route.params.id);
         let link= this.$store.getters.getLinkById(this.$route.params.id).url;
         window.location.href = link;
     },

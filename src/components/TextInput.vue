@@ -3,7 +3,7 @@
   
       <input type="" name="" v-model="link">
       
-      <h1><router-link :to="{ name: 'LinkDetails', params:{id: this.shortLinkGenerated} }">{{this.generated}}</router-link></h1>
+      <h1><router-link :to="'/linkDetails/' + this.shortLinkGenerated">{{this.generated}}</router-link></h1>
       <button @click="generateLink" >Generate</button>
 
         
@@ -51,7 +51,7 @@ methods: {
         if(resValidate) {
             
             
-
+            this.shortLinkGenerated = "";
             for ( let i = 0; i < 5; i++ ) {
                 this.shortLinkGenerated += characters.charAt(Math.floor(Math.random() * charactersLength));
             }
@@ -65,12 +65,14 @@ methods: {
             //sinon on affiche l'url généré précédement dans le store
             } else {
                 this.generated = siteUrl + this.$store.getters.getLinkByUrl(this.link).id;
+                this.shortLinkGenerated = this.$store.getters.getLinkByUrl(this.link).id;
                 this.$toast.open({message:"Lien déjà existent",type:"warning"});
+                
             }
             
     
             //on reset le lien généré.
-            this.shortLinkGenerated = "";
+            
         } else {
             if(this.v$.link.required.$invalid) {
                  this.$toast.open({message:"Le champ est requis",type:"error", position:"bottom"});
