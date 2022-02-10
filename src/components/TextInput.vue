@@ -2,8 +2,11 @@
   <div>
   
       <input type="" name="" v-model="link">
-      <h1>{{this.generated}}</h1>
+      
+      <h1><router-link :to="{ name: 'LinkDetails', params:{id: this.shortLinkGenerated} }">{{this.generated}}</router-link></h1>
       <button @click="generateLink" >Generate</button>
+
+        
   </div>
 </template>
 
@@ -17,8 +20,9 @@ setup(){
 },
 data() {
     return {
-        link: '',
+        link: 'http://google.com',
         generated:'',
+        shortLinkGenerated   :'',
     }
 },
 components: {
@@ -34,23 +38,39 @@ validations: {
     }
 },
 methods: {
+
      async generateLink() {
         let resValidate = await this.v$.link.$validate() ;
       
-        let shortLinkGenerated           = '';
+  
         let characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
         let charactersLength = characters.length;
         let siteUrl = window.location.protocol + "//" + window.location.hostname + '/';
-
+        
 
         if(resValidate) {
             
-            this.$toast.open({message:"Généré",type:"success"});
+            
 
             for ( let i = 0; i < 5; i++ ) {
-                shortLinkGenerated += characters.charAt(Math.floor(Math.random() * charactersLength));
+                this.shortLinkGenerated += characters.charAt(Math.floor(Math.random() * charactersLength));
             }
-            this.generated = siteUrl +shortLinkGenerated;
+            
+
+            //si l'url n'existe pas dans le store alors on enregistre celui ci
+            if(this.$store.getters.getLinkByUrl(this.link) == null) {
+                this.$store.dispatch('addLink', { id: this.shortLinkGenerated, url: this.link, count: 0});
+                this.generated = siteUrl + this.shortLinkGenerated;
+                this.$toast.open({message:"Lien généré",type:"success"});
+            //sinon on affiche l'url généré précédement dans le store
+            } else {
+                this.generated = siteUrl + this.$store.getters.getLinkByUrl(this.link).id;
+                this.$toast.open({message:"Lien déjà existent",type:"warning"});
+            }
+            
+    
+            //on reset le lien généré.
+            this.shortLinkGenerated = "";
         } else {
             if(this.v$.link.required.$invalid) {
                  this.$toast.open({message:"Le champ est requis",type:"error", position:"bottom"});
